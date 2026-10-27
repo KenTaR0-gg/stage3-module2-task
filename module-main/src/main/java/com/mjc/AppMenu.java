@@ -3,8 +3,6 @@ package com.mjc;
 import com.mjc.school.controller.annotation.CommandBody;
 import com.mjc.school.controller.annotation.CommandHandler;
 import com.mjc.school.controller.annotation.CommandParam;
-import com.mjc.school.service.dto.AuthorDtoRequest;
-import com.mjc.school.service.dto.NewsDtoRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -100,8 +98,8 @@ public class AppMenu {
         }
     }
 
-    private Object createDtoFromConsole(Class<?> type, Scanner scanner) {
-        if (type.equals(NewsDtoRequest.class)) {
+    private Object createDtoFromConsole(Class<?> type, Scanner scanner) throws Exception {
+        if (type.getSimpleName().equals("NewsDtoRequest")) {
             System.out.print("Enter news id (or 0 for new): ");
             Long id = scanner.nextLong();
             scanner.nextLine();
@@ -112,14 +110,19 @@ public class AppMenu {
             System.out.print("Enter author id: ");
             Long authorId = scanner.nextLong();
             scanner.nextLine();
-            return new NewsDtoRequest(id == 0 ? null : id, title, content, authorId);
-        } else if (type.equals(AuthorDtoRequest.class)) {
+
+            return type.getConstructor(Long.class, String.class, String.class, Long.class)
+                    .newInstance(id == 0L ? null : id, title, content, authorId);
+
+        } else if (type.getSimpleName().equals("AuthorDtoRequest")) {
             System.out.print("Enter author id (or 0 for new): ");
             Long id = scanner.nextLong();
             scanner.nextLine();
             System.out.print("Enter author name: ");
             String name = scanner.nextLine();
-            return new AuthorDtoRequest(id == 0 ? null : id, name);
+
+            return type.getConstructor(Long.class, String.class)
+                    .newInstance(id == 0L ? null : id, name);
         }
         return null;
     }
