@@ -1,9 +1,20 @@
 plugins {
     id 'java-base'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
 }
+
+
 
 wrapper {
     gradleVersion = gradlewVersion
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
 subprojects {
@@ -28,6 +39,9 @@ subprojects {
 
         annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
         implementation "org.mapstruct:mapstruct:$mapstructVersion"
+
+        implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
+
     }
     test {
         useJUnitPlatform()
