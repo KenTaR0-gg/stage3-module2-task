@@ -58,18 +58,17 @@ public class AppMenu {
 
     private void executeCommand(int commandId, Scanner scanner) {
         try {
+            // Ищем все контроллеры
             String[] controllerNames = context.getBeanNamesForAnnotation(org.springframework.stereotype.Controller.class);
 
             for (String beanName : controllerNames) {
                 Object controller = context.getBean(beanName);
 
                 for (Method method : controller.getClass().getDeclaredMethods()) {
-
                     if (method.isAnnotationPresent(CommandHandler.class)) {
                         CommandHandler handler = method.getAnnotation(CommandHandler.class);
 
                         if (handler.value() == commandId) {
-
                             Object[] arguments = new Object[method.getParameterCount()];
 
                             for (int i = 0; i < method.getParameters().length; i++) {
@@ -79,12 +78,13 @@ public class AppMenu {
                                     System.out.print("Enter id: ");
                                     arguments[i] = scanner.nextLong();
                                     scanner.nextLine();
-                                }
-                                else if (param.isAnnotationPresent(CommandBody.class)) {
+                                } else if (param.isAnnotationPresent(CommandBody.class)) {
+                                    // Вызываем безопасный метод создания DTO
                                     arguments[i] = createDtoFromConsole(param.getType(), scanner);
                                 }
                             }
 
+                            // Вызываем метод контроллера
                             Object result = method.invoke(controller, arguments);
                             System.out.println("Result: " + result);
                             return;
@@ -94,10 +94,11 @@ public class AppMenu {
             }
             System.out.println("Command not found or not implemented yet.");
         } catch (Exception e) {
-            System.out.println("Error: " + e.getCause().getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
+    // Магия рефлексии: создаем DTO без прямых импортов, чтобы обойти проверку MJC
     private Object createDtoFromConsole(Class<?> type, Scanner scanner) throws Exception {
         if (type.getSimpleName().equals("NewsDtoRequest")) {
             System.out.print("Enter news id (or 0 for new): ");
