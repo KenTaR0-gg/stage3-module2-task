@@ -5,7 +5,9 @@ plugins {
     id 'java'
 }
 
-
+bootJar {
+    mainClass = 'com.mjc.Main' // Укажи здесь точный путь к твоему классу Main
+}
 
 wrapper {
     gradleVersion = gradlewVersion
