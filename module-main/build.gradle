@@ -1,8 +1,11 @@
 plugins {
     id 'application'
+    alias(libs.plugins.shadow)
 }
 
-mainClassName = 'com.mjc.school.Main'
+application {
+    mainClass = 'com.mjc.school.Main'
+}
 
 dependencies {
     implementation project(':module-web')
