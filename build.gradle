@@ -6,7 +6,7 @@ plugins {
 }
 
 bootJar {
-    mainClass = 'com.mjc.Main' // Укажи здесь точный путь к твоему классу Main
+    mainClass = 'com.mjc.Main'
 }
 
 wrapper {
