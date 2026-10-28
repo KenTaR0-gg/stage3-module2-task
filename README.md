@@ -113,8 +113,8 @@ implementing all validations in business logic code or declaratively, e.g. via c
 
 #### Application requirements:
 
-1. Java 17 should be used.
-2. Gradle. Multi-module project. Spring.
+1. Java 25 should be used.
+2. Gradle 9.1.0. Multi-module project. Spring.
 3. Application packages root: `com.mjc.school`.
 4. Java Code Convention is mandatory.
 
