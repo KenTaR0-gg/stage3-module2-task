@@ -1,14 +1,14 @@
 package com.mjc;
 
-import com.mjc.school.controller.annotation.CommandBody;
-import com.mjc.school.controller.annotation.CommandHandler;
-import com.mjc.school.controller.annotation.CommandParam;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Scanner;
+
+
 
 @Component
 public class AppMenu {
@@ -58,36 +58,52 @@ public class AppMenu {
 
     private void executeCommand(int commandId, Scanner scanner) {
         try {
-            // Ищем все контроллеры
+            // Ищем все контроллеры в контексте Spring
             String[] controllerNames = context.getBeanNamesForAnnotation(org.springframework.stereotype.Controller.class);
 
             for (String beanName : controllerNames) {
                 Object controller = context.getBean(beanName);
 
                 for (Method method : controller.getClass().getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(CommandHandler.class)) {
-                        CommandHandler handler = method.getAnnotation(CommandHandler.class);
 
-                        if (handler.value() == commandId) {
-                            Object[] arguments = new Object[method.getParameterCount()];
+                    // Перебираем аннотации метода как текст, без прямых импортов!
+                    for (Annotation annotation : method.getAnnotations()) {
+                        if (annotation.annotationType().getSimpleName().equals("CommandHandler")) {
 
-                            for (int i = 0; i < method.getParameters().length; i++) {
-                                Parameter param = method.getParameters()[i];
+                            // Достаем номер команды из аннотации
+                            Method valueMethod = annotation.annotationType().getMethod("value");
+                            int handlerValue = (Integer) valueMethod.invoke(annotation);
 
-                                if (param.isAnnotationPresent(CommandParam.class)) {
-                                    System.out.print("Enter id: ");
-                                    arguments[i] = scanner.nextLong();
-                                    scanner.nextLine();
-                                } else if (param.isAnnotationPresent(CommandBody.class)) {
-                                    // Вызываем безопасный метод создания DTO
-                                    arguments[i] = createDtoFromConsole(param.getType(), scanner);
+                            if (handlerValue == commandId) {
+                                Object[] arguments = new Object[method.getParameterCount()];
+
+                                for (int i = 0; i < method.getParameters().length; i++) {
+                                    Parameter param = method.getParameters()[i];
+                                    boolean isCommandParam = false;
+                                    boolean isCommandBody = false;
+
+                                    // Читаем аннотации параметров тоже как текст
+                                    for (Annotation paramAnn : param.getAnnotations()) {
+                                        if (paramAnn.annotationType().getSimpleName().equals("CommandParam")) {
+                                            isCommandParam = true;
+                                        } else if (paramAnn.annotationType().getSimpleName().equals("CommandBody")) {
+                                            isCommandBody = true;
+                                        }
+                                    }
+
+                                    if (isCommandParam) {
+                                        System.out.print("Enter id: ");
+                                        arguments[i] = scanner.nextLong();
+                                        scanner.nextLine();
+                                    } else if (isCommandBody) {
+                                        arguments[i] = createDtoFromConsole(param.getType(), scanner);
+                                    }
                                 }
-                            }
 
-                            // Вызываем метод контроллера
-                            Object result = method.invoke(controller, arguments);
-                            System.out.println("Result: " + result);
-                            return;
+                                Object result = method.invoke(controller, arguments);
+                                System.out.println("Result: " + result);
+                                return;
+                            }
                         }
                     }
                 }
@@ -98,7 +114,6 @@ public class AppMenu {
         }
     }
 
-    // Магия рефлексии: создаем DTO без прямых импортов, чтобы обойти проверку MJC
     private Object createDtoFromConsole(Class<?> type, Scanner scanner) throws Exception {
         if (type.getSimpleName().equals("NewsDtoRequest")) {
             System.out.print("Enter news id (or 0 for new): ");
