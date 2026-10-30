@@ -1,6 +1,6 @@
 //package com.mjc;
 //
-//import com.mjc.school.controller.NewsController;
+//import com.mjc.school.controller.implementation.NewsController;
 //import com.mjc.school.repository.implementation.DataSource;
 //import com.mjc.school.repository.implementation.NewsRepository;
 //import com.mjc.school.service.implementation.NewsService;
