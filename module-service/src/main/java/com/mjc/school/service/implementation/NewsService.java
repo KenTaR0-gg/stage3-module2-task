@@ -37,25 +37,25 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
     public List<NewsDtoResponse> readAll() {
         List<NewsModel> models = new ArrayList<>(newsRepository.readAll());
         List<NewsDtoResponse> resp = new ArrayList<>();
-        for (NewsModel nm : models) {
-            NewsDtoResponse kot = newsMapper.modelToDto(nm);
-            resp.add(kot);
-        }
+
+        models.forEach(m -> resp.add(newsMapper.modelToDto(m)));
         return resp;
     }
 
     @Override
     public NewsDtoResponse readById(Long id) {
         NewsModel nm = newsRepository.readById(id);
-        if (nm != null) return newsMapper.modelToDto(nm);
-        throw new ValidatorException("News with id " + id + " does not exist.", "котя-1.1");
+        if (nm != null) {
+            return newsMapper.modelToDto(nm);
+        }
+        throw new ValidatorException("котя-1.1", "News with id " + id + " does not exist.");
     }
 
     @Override
     public NewsDtoResponse update(NewsDtoRequest updateRequest) {
         validator.validateNewsDto(updateRequest);
         if (newsRepository.readById(updateRequest.getId()) == null) {
-            throw new ValidatorException("News with id " + updateRequest.getId() + " does not exist.", "котя-1.1");
+            throw new ValidatorException("котя-1.1", "News with id " + updateRequest.getId() + " does not exist.");
         }
 
         NewsModel model = newsMapper.dtoToModel(updateRequest);
@@ -66,7 +66,7 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
     @Override
     public Boolean delete(Long id) {
         if (newsRepository.readById(id) == null) {
-            throw new ValidatorException("News with id " + id + " does not exist.", "котя-1.1");
+            throw new ValidatorException("котя-1.1", "News with id " + id + " does not exist.");
         }
         return newsRepository.delete(id);
     }

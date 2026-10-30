@@ -1,6 +1,5 @@
 package com.mjc.school.repository.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class AuthorModel implements BaseEntity<Long> {
@@ -44,9 +43,15 @@ public class AuthorModel implements BaseEntity<Long> {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime now) {
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
-    public void setLastUpdateDate(LocalDateTime now) {
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }

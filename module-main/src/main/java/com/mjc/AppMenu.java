@@ -2,8 +2,10 @@ package com.mjc;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Scanner;
@@ -58,19 +60,16 @@ public class AppMenu {
 
     private void executeCommand(int commandId, Scanner scanner) {
         try {
-            // Ищем все контроллеры в контексте Spring
-            String[] controllerNames = context.getBeanNamesForAnnotation(org.springframework.stereotype.Controller.class);
+            String[] controllerNames = context.getBeanNamesForAnnotation(Controller.class);
 
             for (String beanName : controllerNames) {
                 Object controller = context.getBean(beanName);
 
                 for (Method method : controller.getClass().getDeclaredMethods()) {
 
-                    // Перебираем аннотации метода как текст, без прямых импортов!
                     for (Annotation annotation : method.getAnnotations()) {
                         if (annotation.annotationType().getSimpleName().equals("CommandHandler")) {
 
-                            // Достаем номер команды из аннотации
                             Method valueMethod = annotation.annotationType().getMethod("value");
                             int handlerValue = (Integer) valueMethod.invoke(annotation);
 
@@ -101,7 +100,14 @@ public class AppMenu {
                                 }
 
                                 Object result = method.invoke(controller, arguments);
-                                System.out.println("Result: " + result);
+                                if (result instanceof Iterable<?> iterable) {
+                                    System.out.println("Result:");
+                                    for (Object item : iterable) {
+                                        System.out.println(item);
+                                    }
+                                } else {
+                                    System.out.println("Result: " + result);
+                                }
                                 return;
                             }
                         }
@@ -110,7 +116,12 @@ public class AppMenu {
             }
             System.out.println("Command not found or not implemented yet.");
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+
+            if (e instanceof InvocationTargetException) {
+                System.out.println(((InvocationTargetException) e).getTargetException().getMessage());
+            } else {
+                System.out.println("System Error: " + e.getMessage());
+            }
         }
     }
 

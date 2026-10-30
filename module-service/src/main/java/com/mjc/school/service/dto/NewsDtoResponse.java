@@ -21,7 +21,17 @@ public class NewsDtoResponse {
         this.lastUpdateDate = lastUpdateDate;
         this.authorId = authorId;
     }
-
+    @Override
+    public String toString() {
+        return "NewsDtoResponse[" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", createDate=" + createDate +
+                ", lastUpdateDate=" + lastUpdateDate +
+                ", authorId=" + authorId +
+                ']';
+    }
 
     public Long getId() {
         return id;

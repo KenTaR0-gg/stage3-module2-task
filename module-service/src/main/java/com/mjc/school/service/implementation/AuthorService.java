@@ -41,22 +41,21 @@ public class AuthorService implements BaseService<AuthorDtoRequest, AuthorDtoRes
             AuthorDtoResponse kot = authorMapper.modelToDto(am);
             resp.add(kot);
         }
-     return resp;
+        return resp;
     }
 
     @Override
     public AuthorDtoResponse readById(Long id) {
-
         AuthorModel am = authorRepository.readById(id);
         if (am != null) return authorMapper.modelToDto(am);
-        throw new ValidatorException("Author with id " + id + " does not exist.", "котя-1.1");
+        throw new ValidatorException("котя-1.1", "Author with id " + id + " does not exist.");
     }
 
     @Override
     public AuthorDtoResponse update(AuthorDtoRequest updateRequest) {
         validator.validateAuthorDto(updateRequest);
         if (authorRepository.readById(updateRequest.id()) == null) {
-            throw new ValidatorException("Author with id " + updateRequest.id() + " does not exist.", "котя-1.1");
+            throw new ValidatorException("котя-1.1", "Author with id " + updateRequest.id() + " does not exist.");
         }
         AuthorModel model = authorMapper.dtoToModel(updateRequest);
         AuthorModel updatedModel = authorRepository.update(model);
@@ -66,7 +65,7 @@ public class AuthorService implements BaseService<AuthorDtoRequest, AuthorDtoRes
     @Override
     public Boolean delete(Long id) {
         if (authorRepository.readById(id) == null) {
-            throw new ValidatorException("News with id " + id + " does not exist.", "котя-1.1");
+            throw new ValidatorException("котя-1.1", "Author with id " + id + " does not exist.");
         }
         return authorRepository.delete(id);
     }

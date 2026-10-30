@@ -4,6 +4,7 @@ import com.mjc.school.repository.BaseRepository;
 import com.mjc.school.repository.model.NewsModel;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
         return dataSource.getNews().stream()
                 .filter(news -> Objects.equals(news.getId(), id))
                 .findFirst()
-                .orElse(null); // Если не нашли, возвращаем null
+                .orElse(null);
     }
 
     @Override
@@ -36,6 +37,10 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
                 .max().orElse(0);
 
         entity.setId(maxId + 1);
+        LocalDateTime now = LocalDateTime.now();
+        entity.setCreateDate(now);
+        entity.setLastUpdateDate(now);
+
         dataSource.getNews().add(entity);
         return entity;
     }
@@ -47,7 +52,7 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
             existingNews.setTitle(entity.getTitle());
             existingNews.setContent(entity.getContent());
             existingNews.setAuthorId(entity.getAuthorId());
-            existingNews.setLastUpdateDate(entity.getLastUpdateDate());
+            existingNews.setLastUpdateDate(LocalDateTime.now());
             return existingNews;
         }
         return null;

@@ -76,7 +76,7 @@ package com.mjc;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main {
-    public static void main(String[] args) {
+    static void main() {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProjectConfig.class);
 
         AppMenu menu = context.getBean(AppMenu.class);
@@ -86,3 +86,5 @@ public class Main {
         context.close();
     }
 }
+
+
